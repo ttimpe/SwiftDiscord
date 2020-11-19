@@ -429,7 +429,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
 
     private func handleReady(with payload: DiscordGatewayPayloadData) {
         guard case let .object(voiceInformation) = payload,
-              let ssrc = voiceInformation["ssrc"] as? Int,
+              let ssrc = voiceInformation["audio_ssrc"] as? Int,
               let udpPort = voiceInformation["port"] as? Int,
               let modes = voiceInformation["modes"] as? [String], 
               let ip = voiceInformation["ip"] as? String else {

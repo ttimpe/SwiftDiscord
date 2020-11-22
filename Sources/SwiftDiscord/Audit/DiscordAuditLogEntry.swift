@@ -43,6 +43,10 @@ public struct DiscordAuditLogEntry {
 
     /// The user's id who caused this entry.
     public let userId: Snowflake
+    
+    /// The timestamp of this entry
+    public let timestamp: Date
+    
 
     init(auditEntryObject: [String: Any]) {
         actionType = DiscordAuditLogActionType(rawValue: auditEntryObject.get("action_type", or: -1)) ?? .other
@@ -52,6 +56,7 @@ public struct DiscordAuditLogEntry {
         reason = auditEntryObject.get("reason", or: "")
         targetId = auditEntryObject.get("target_id", or: "")
         userId = auditEntryObject.getSnowflake(key: "user_id")
+        timestamp = DiscordDateFormatter.format(auditEntryObject.get("timestamp", or:"")) ?? Date()
     }
 
     static func entries(fromArray arr: [[String: Any]]) -> [DiscordAuditLogEntry] {

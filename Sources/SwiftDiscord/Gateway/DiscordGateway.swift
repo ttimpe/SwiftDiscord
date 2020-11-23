@@ -296,10 +296,12 @@ public enum DiscordNormalGatewayCode : Int {
     case hello
     /// HeartbeatAck
     case heartbeatAck
-    // ClientConnect
+    /// ClientConnect
     case clientConnect
-    // ClientDisconnect
+    /// ClientDisconnect
     case clientDisconnect
+    /// codec information
+    case codecInformation
 }
 
 /// Represents a voice gateway code

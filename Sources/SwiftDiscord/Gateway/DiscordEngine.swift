@@ -251,6 +251,10 @@ open class DiscordEngine : DiscordEngineSpec {
         case .heartbeatAck:
             heartbeatQueue.sync { self.pongsMissed = 0 }
             logger.debug("Got heartbeat ack")
+        case .clientConnect:
+            logger.info("Got client connect")
+        case .clientDisconnect:
+            logger.info("Got client disconnect")
         default:
             error(message: "Unhandled payload: \(payload.code)")
         }

@@ -459,6 +459,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
     private func handleVoiceSessionDescription(with payload: DiscordGatewayPayloadData) {
         guard case let .object(voiceInformation) = payload,
               let secret = voiceInformation["secret_key"] as? [Int] else {
+            error(message: "Couldn't get secret key from payload \(payload)")
             disconnect()
 
             return

@@ -339,6 +339,9 @@ public enum DiscordVoiceGatewayCode : Int {
     
     /// Client disconnect. Sent by the server.
     case clientDisconnect = 13
+    
+    // Codec information?
+    case codecInformation = 14
 }
 
 /// Represents the reason a gateway was closed.

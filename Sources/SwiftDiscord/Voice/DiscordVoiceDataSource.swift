@@ -425,6 +425,7 @@ public class DiscordEncoderMiddleware {
             }
             #endif
             ffmpeg.executableURL = ffmpegURL
+            logger.info("ffmpeg \(ffmpeg)")
         }
 
         ffmpeg.standardInput = pipe

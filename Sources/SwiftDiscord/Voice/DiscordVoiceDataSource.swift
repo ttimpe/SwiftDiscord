@@ -414,19 +414,13 @@ public class DiscordEncoderMiddleware {
 
         middleware.standardOutput = pipe
         
-        let ffmpegPath = "/usr/local/bin/ffmpeg"
-        let ffmpegURL = URL(fileURLWithPath: ffmpegPath)
+
+        let ffmpegURL = URL(string: "file:///usr/local/bin/ffmpeg")
         
-        pathSetter: do {
-            #if os(macOS)
-            guard #available(macOS 10.13, *) else {
-                ffmpeg.launchPath = ffmpegPath
-                break pathSetter
-            }
-            #endif
-            ffmpeg.executableURL = ffmpegURL
-            logger.info("ffmpeg \(ffmpeg)")
-        }
+     
+        ffmpeg.executableURL = ffmpegURL
+        logger.info("ffmpeg url \(ffmpeg.executableURL)")
+
 
         ffmpeg.standardInput = pipe
         ffmpeg.standardOutput = source.writeToHandler

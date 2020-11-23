@@ -237,6 +237,8 @@ extension DiscordGatewayPayload {
         let code: DiscordGatewayCode
         let payload = DiscordGatewayPayloadData.dataFromDictionary(dictionary["d"])
 
+        
+        
         if fromGateway, let gatewayCode = DiscordNormalGatewayCode(rawValue: op) {
             code = .gateway(gatewayCode)
         } else if let voiceCode = DiscordVoiceGatewayCode(rawValue: op) {
@@ -294,6 +296,10 @@ public enum DiscordNormalGatewayCode : Int {
     case hello
     /// HeartbeatAck
     case heartbeatAck
+    // ClientConnect
+    case clientConnect
+    // ClientDisconnect
+    case clientDisconnect
 }
 
 /// Represents a voice gateway code
@@ -328,6 +334,9 @@ public enum DiscordVoiceGatewayCode : Int {
     /// Resumed. Sent by the server.
     case resumed = 9
 
+    /// Client disconnect. Sent by the server.
+    case clientConnect = 12
+    
     /// Client disconnect. Sent by the server.
     case clientDisconnect = 13
 }

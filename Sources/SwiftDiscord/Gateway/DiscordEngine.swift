@@ -296,7 +296,7 @@ open class DiscordEngine : DiscordEngineSpec {
     ///
     open func parseGatewayMessage(_ string: String) {
         guard let decoded = DiscordGatewayPayload.payloadFromString(string) else {
-            error(message: "Got unknown payload \(string)")
+            error(message: "[parseGatewayMessage] Got unknown payload \(string)")
 
             return
         }

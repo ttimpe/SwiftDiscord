@@ -191,11 +191,13 @@ open class DiscordOpusDecoder : DiscordOpusCodeable {
     /// - returns: An opus encoded packet.
     ///
     open func decode(_ audio: UnsafePointer<UInt8>?, packetSize: Int, frameSize: Int) throws -> [opus_int16] {
+        
         let maxSize = maxFrameSize(assumingSize: frameSize)
         let output = UnsafeMutablePointer<opus_int16>.allocate(capacity: maxSize)
+        
         let decodedSize = Int(opus_decode(decoderState, audio, Int32(packetSize), output, Int32(frameSize), 0))
         let totalSize = decodedSize * channels
-
+        print("total size of packet \(totalSize)")
         defer { output.deallocate() }
 
         guard decodedSize > 0, totalSize <= maxSize else { throw DiscordVoiceError.decodeFail }

@@ -245,20 +245,25 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         // TODO this isn't totally correct, there might be an extension after the rtp header
         let rtpHeader = Array(data.prefix(12))
         
-        // maybe drop another byte - 13 instead of 12
-        let voiceData = Array(data.dropFirst(13))
+        let voiceData = Array(data.dropFirst(12))
         let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
 
-        guard audioSize > 0 else { throw EngineError.decryptionError }
+        guard audioSize > 0 else {
+            print("zero audio size")
+            throw EngineError.decryptionError
+            
+        }
 
         let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
         let nonce = rtpHeader + DiscordVoiceEngine.padding
-
+        print("nonce \(nonce)")
         defer { unencrypted.deallocate() }
 
         let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 12), nonce, secret)
 
-        guard success != -1 else { throw EngineError.decryptionError }
+        guard success != -1 else {
+            print("Couldn't decrypt voice data \(voiceData)")
+            throw EngineError.decryptionError }
 
         return rtpHeader + Array(UnsafeBufferPointer(start: unencrypted, count: audioSize))
     }

@@ -440,13 +440,7 @@ public class DiscordEncoderMiddleware {
     /// Starts the middleware.
     ///
     public func start() throws {
-        #if os(macOS)
-        guard #available(macOS 10.13, *) else {
-            ffmpeg.launch()
-            middleware.launch()
-            return
-        }
-        #endif
+        
 
         try ffmpeg.run()
         try middleware.run()

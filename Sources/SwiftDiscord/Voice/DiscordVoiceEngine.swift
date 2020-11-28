@@ -263,7 +263,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         
         let voiceData = Array(data.dropFirst(12).dropLast(24))
         
-        let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
+        let audioSize = voiceData.count
 
         let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
 

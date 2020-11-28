@@ -248,23 +248,36 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         print("Full voice packet is \(Array(data))")
         let rtpHeader = Array(data.prefix(12))
         
-        let voiceData = Array(data.dropFirst(12))
+      
+        var nonce: [UInt8] = Array.init(repeating: UInt8(0), count: 24)
+        
+
+        let normalNonce = rtpHeader + DiscordVoiceEngine.padding
+        let suffixNonce = data.suffix(24)
+        let liteNonce = data.suffix(4)
+        nonce = Array(suffixNonce)
+        
+       // let nonce: [UInt8] = [0,0,0,0,0,0,0,0,0,0,0,0]
+        
+        print("nonce \(nonce)")
+        
+        let voiceData = Array(data.dropFirst(12).dropLast(24))
+        
         let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
 
+        let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
+
+        
         guard audioSize > 0 else {
             print("zero audio size")
             throw EngineError.decryptionError
             
         }
-
-        let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
-        // let nonce = rtpHeader + DiscordVoiceEngine.padding
-        let nonce: [UInt8] = [0,0,0,0,0,0,0,0,0,0,0,0]
         
-        print("nonce \(nonce)")
+        
         defer { unencrypted.deallocate() }
 
-        let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 12), nonce, secret)
+        let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 36), nonce, secret)
 
         guard success != -1 else {
             print("Couldn't decrypt voice data \(voiceData)")

@@ -245,7 +245,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
     private func decryptVoiceData(_ data: Data) throws -> [UInt8] {
         // TODO this isn't totally correct, there might be an extension after the rtp header
         
-        print("Full voice packet is \(data)")
+        print("Full voice packet is \(Array(data))")
         let rtpHeader = Array(data.prefix(12))
         
         let voiceData = Array(data.dropFirst(12))

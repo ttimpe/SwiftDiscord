@@ -56,7 +56,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
 
     /// The voice url
     public var connectURL: String {
-        return "wss://\(voiceServerInformation.endpoint.components(separatedBy: ":")[0])?v=4"
+        return "wss://\(voiceServerInformation.endpoint.components(separatedBy: ":")[0])?v=5"
     }
 
     /// The connect UUID of this WebSocketable.

@@ -78,7 +78,8 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
             "session_id": voiceState.sessionId,
             "server_id": String(describing: voiceState.guildId),
             "user_id": String(describing: voiceState.userId),
-            "token": voiceServerInformation.token
+            "token": voiceServerInformation.token,
+            "video": true
         ]
     }
 

@@ -253,8 +253,10 @@ open class DiscordEngine : DiscordEngineSpec {
             logger.debug("Got heartbeat ack")
         case .clientConnect:
             logger.info("Got client connect")
+            handleClientConnect(payload)
         case .clientDisconnect:
             logger.info("Got client disconnect")
+            handleClientDisconnect(payload)
         default:
             error(message: "Unhandled payload: \(payload.code)")
         }
@@ -405,5 +407,22 @@ open class DiscordEngine : DiscordEngineSpec {
         heartbeatInterval = milliseconds
 
         sendHeartbeat()
+    }
+    
+    
+    ///
+    /// Handles the client connected event.
+    ///
+    open func handleClientConnect(_ payload: DiscordGatewayPayload) {
+        logger.info("client connected on shard: \(shardNum)")
+
+    }
+    
+    ///
+    /// Handles the client connected event.
+    ///
+    open func handleClientDisconnect(_ payload: DiscordGatewayPayload) {
+        logger.info("client disconnected on shard: \(shardNum)")
+
     }
 }

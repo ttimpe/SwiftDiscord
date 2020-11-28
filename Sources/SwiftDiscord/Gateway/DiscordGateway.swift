@@ -336,7 +336,7 @@ public enum DiscordVoiceGatewayCode : Int {
     /// Resumed. Sent by the server.
     case resumed = 9
 
-    /// Client disconnect. Sent by the server.
+    /// Client connect. Sent by the server.
     case clientConnect = 12
     
     /// Client disconnect. Sent by the server.

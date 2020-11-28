@@ -428,9 +428,11 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
             handleResumed(payload)
         case .clientDisconnect:
             // Should we tell someone about this?
-            logger.debug("Someone left voice channel \(payload)")
+            logger.info("Someone left voice channel \(payload)")
+        case .clientConnect:
+            logger.info("Someone joined voice \(payload)")
         default:
-            logger.debug("Unhandled voice payload \(payload)")
+            logger.info("Unhandled voice payload \(payload)")
         }
     }
 

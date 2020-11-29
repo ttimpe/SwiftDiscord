@@ -21,6 +21,8 @@ import Logging
 import WebSocketKit
 import Socket
 import Sodium
+import CryptoKit
+
 
 fileprivate let logger = Logger(label: "DiscordVoiceEngine")
 
@@ -37,6 +39,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         case ipExtraction
         case unknown
     }
+    
 
     // MARK: Properties
 
@@ -248,31 +251,42 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         print("Full voice packet is \(Array(data))")
         let rtpHeader = Array(data.prefix(12))
         
-      
-        var nonce: [UInt8] = Array.init(repeating: UInt8(0), count: 24)
+        let encryptedVoiceData = Array(data.dropFirst(12))
+       // var nonce: [UInt8] = Array.init(repeating: UInt8(0), count: 24)
         
+        let sealedBox = try AES.GCM.SealedBox(combined: encryptedVoiceData)
+        let key = SymmetricKey(data: secret)
+        
+        let unencryptedData = try AES.GCM.open(sealedBox, using: key)
+        /*
 
-        let normalNonce = rtpHeader + DiscordVoiceEngine.padding
+      //  let normalNonce = rtpHeader + DiscordVoiceEngine.padding
         let suffixNonce = data.suffix(24)
         let liteNonce = data.suffix(4)
-        nonce = Array(suffixNonce)
+       // nonce = Array(suffixNonce)
         
        // let nonce: [UInt8] = [0,0,0,0,0,0,0,0,0,0,0,0]
         
-        print("nonce \(nonce)")
+      //  print("nonce \(nonce)")
         
         let voiceData = Array(data.dropFirst(12).dropLast(24))
+        
+        
         
         let audioSize = voiceData.count
 
         let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
 
         
+        
+        
         guard audioSize > 0 else {
             print("zero audio size")
             throw EngineError.decryptionError
             
         }
+        
+        
         
         
         defer { unencrypted.deallocate() }
@@ -284,6 +298,12 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
             throw EngineError.decryptionError }
 
         return rtpHeader + Array(UnsafeBufferPointer(start: unencrypted, count: audioSize))
+        
+        */
+        
+        print([UInt8](unencryptedData))
+        
+        return [UInt8](unencryptedData)
     }
 
     ///

@@ -252,12 +252,25 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         let rtpHeader = Array(data.prefix(12))
         
         let encryptedVoiceData = Array(data.dropFirst(12))
+        var unencryptedVoiceData: Data!
        // var nonce: [UInt8] = Array.init(repeating: UInt8(0), count: 24)
+        if let sealedBox = try? AES.GCM.SealedBox(combined: encryptedVoiceData) {
+            let key = SymmetricKey(data: secret)
+            print("Got key")
+            unencryptedVoiceData = try AES.GCM.open(sealedBox, using: key)
+            if let data = unencryptedVoiceData {
+                
+                print("got data")
+                print([UInt8](data))
+
+                return [UInt8](data)
+            } else {
+                print("Failed to decrypt")
+            }
+        } else {
+            print("Failed to created sealedBox")
+        }
         
-        let sealedBox = try AES.GCM.SealedBox(combined: encryptedVoiceData)
-        let key = SymmetricKey(data: secret)
-        
-        let unencryptedData = try AES.GCM.open(sealedBox, using: key)
         /*
 
       //  let normalNonce = rtpHeader + DiscordVoiceEngine.padding
@@ -301,9 +314,8 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         
         */
         
-        print([UInt8](unencryptedData))
         
-        return [UInt8](unencryptedData)
+        return [UInt8](unencryptedVoiceData)
     }
 
     ///

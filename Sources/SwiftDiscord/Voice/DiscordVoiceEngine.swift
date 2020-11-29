@@ -251,7 +251,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         print("Full voice packet is \(Array(data))")
         let rtpHeader = Array(data.prefix(12))
         
-        let encryptedVoiceData = Array(data.dropFirst(12))
+        let encryptedVoiceData = Array(data.dropFirst(8))
         var unencryptedVoiceData: Data!
        // var nonce: [UInt8] = Array.init(repeating: UInt8(0), count: 24)
         if let sealedBox = try? AES.GCM.SealedBox(combined: encryptedVoiceData) {

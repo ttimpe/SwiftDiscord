@@ -249,33 +249,23 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         // TODO this isn't totally correct, there might be an extension after the rtp header
         
         print("Full voice packet is \(Array(data))")
-        let rtpHeader = Array(data.prefix(12))
-        let normalNonce = rtpHeader + DiscordVoiceEngine.padding
+        // TODO this isn't totally correct, there might be an extension after the rtp header
+         let rtpHeader = Array(data.prefix(24))
+         let voiceData = Array(data.dropFirst(24))
+         let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
 
-     //   let suffixNonce = data.suffix(24)
-       // let liteNonce = data.suffix(4)
-        
-        let voiceData = Array(data.dropFirst(12))
-        
-        
-        
-        let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
+         guard audioSize > 0 else { throw EngineError.decryptionError }
 
-        var unencrypted = [UInt8]()
+         let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
+         let nonce = rtpHeader
 
-        guard audioSize > 0 else {
-            print("zero audio size")
-            throw EngineError.decryptionError
-            
-        }
+         defer { unencrypted.deallocate() }
 
-        let success = crypto_secretbox_open_easy(&unencrypted, voiceData, UInt64(data.count - 12), normalNonce, secret)
+         let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 24), nonce, secret)
 
-        guard success != -1 else {
-            print("Couldn't decrypt voice data \(voiceData)")
-            throw EngineError.decryptionError }
+         guard success != -1 else { throw EngineError.decryptionError }
 
-        return rtpHeader + unencrypted
+         return rtpHeader + Array(UnsafeBufferPointer(start: unencrypted, count: audioSize))
     }
 
     ///

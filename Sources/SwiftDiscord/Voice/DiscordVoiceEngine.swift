@@ -257,6 +257,8 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         
         let voiceData = Array(data.dropFirst(12))
         
+        
+        
         let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
 
         let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
@@ -269,7 +271,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
 
         defer { unencrypted.deallocate() }
 
-        let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 12), normalNonce, secret)
+        let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(audioSize), normalNonce, secret)
 
         guard success != -1 else {
             print("Couldn't decrypt voice data \(voiceData)")

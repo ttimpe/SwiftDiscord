@@ -250,7 +250,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         
         print("Full voice packet is \(Array(data))")
         let rtpHeader = Array(data.prefix(12))
-        let normalNonce = rtpHeader
+        let normalNonce = rtpHeader + DiscordVoiceEngine.padding
 
      //   let suffixNonce = data.suffix(24)
        // let liteNonce = data.suffix(4)

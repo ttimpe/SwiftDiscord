@@ -250,72 +250,32 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         
         print("Full voice packet is \(Array(data))")
         let rtpHeader = Array(data.prefix(12))
-        
-        let encryptedVoiceData = Array(data.dropFirst(8))
-        var unencryptedVoiceData: Data!
-       // var nonce: [UInt8] = Array.init(repeating: UInt8(0), count: 24)
-        if let sealedBox = try? AES.GCM.SealedBox(combined: encryptedVoiceData) {
-            let key = SymmetricKey(data: secret)
-            print("Got key")
-            unencryptedVoiceData = try AES.GCM.open(sealedBox, using: key)
-            if let data = unencryptedVoiceData {
-                
-                print("got data")
-                print([UInt8](data))
+        let normalNonce = rtpHeader
 
-                return [UInt8](data)
-            } else {
-                print("Failed to decrypt")
-            }
-        } else {
-            print("Failed to created sealedBox")
-        }
+     //   let suffixNonce = data.suffix(24)
+       // let liteNonce = data.suffix(4)
         
-        /*
-
-      //  let normalNonce = rtpHeader + DiscordVoiceEngine.padding
-        let suffixNonce = data.suffix(24)
-        let liteNonce = data.suffix(4)
-       // nonce = Array(suffixNonce)
+        let voiceData = Array(data.dropFirst(12))
         
-       // let nonce: [UInt8] = [0,0,0,0,0,0,0,0,0,0,0,0]
-        
-      //  print("nonce \(nonce)")
-        
-        let voiceData = Array(data.dropFirst(12).dropLast(24))
-        
-        
-        
-        let audioSize = voiceData.count
+        let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
 
         let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
 
-        
-        
-        
         guard audioSize > 0 else {
             print("zero audio size")
             throw EngineError.decryptionError
             
         }
-        
-        
-        
-        
+
         defer { unencrypted.deallocate() }
 
-        let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 36), nonce, secret)
+        let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 12), normalNonce, secret)
 
         guard success != -1 else {
             print("Couldn't decrypt voice data \(voiceData)")
             throw EngineError.decryptionError }
 
         return rtpHeader + Array(UnsafeBufferPointer(start: unencrypted, count: audioSize))
-        
-        */
-        
-        
-        return [UInt8](unencryptedVoiceData)
     }
 
     ///
@@ -599,12 +559,31 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
     private func selectProtocol(with ip: String, on port: Int) {
         logger.debug("Selecting UDP protocol with ip: \(ip) on port: \(port)")
 
+        /// Choosing opus for voice connections and H264 for video data
+        let codecSelection: [[String: Any]] = [
+        ["name":"opus",
+         "type": "audio",
+         "priority": 1000,
+         "payload_type": 101,
+         "rtx_payload_type": 102
+        ],
+        [
+            "name": "H264",
+            "type":"video",
+            "priority": 1000,
+            "payload_type": 101,
+            "rtx_payload_type": 102
+        ]
+        ]
+        
+        
         let payloadData: [String: Any] = [
             "protocol": "udp",
             "data": [
                 "address": ip,
                 "port": port,
-                "mode": "xsalsa20_poly1305"
+                "mode": "xsalsa20_poly1305",
+                "codecs": codecSelection
             ]
         ]
 

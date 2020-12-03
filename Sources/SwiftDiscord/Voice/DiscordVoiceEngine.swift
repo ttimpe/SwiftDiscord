@@ -250,8 +250,8 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
         
         print("Full voice packet is \(Array(data))")
         // TODO this isn't totally correct, there might be an extension after the rtp header
-         let rtpHeader = Array(data.prefix(24))
-         let voiceData = Array(data.dropFirst(24))
+         let rtpHeader = Array(data.prefix(12))
+         let voiceData = Array(data.dropFirst(12))
          let audioSize = voiceData.count - Int(crypto_secretbox_MACBYTES)
 
          guard audioSize > 0 else { throw EngineError.decryptionError }
@@ -260,8 +260,8 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
          let nonce = rtpHeader
 
          defer { unencrypted.deallocate() }
-
-         let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 24), nonce, secret)
+         print("trying to decrypt voice data with secret\(secret) and nonce \(nonce)")
+         let success = crypto_secretbox_open_easy(unencrypted, voiceData, UInt64(data.count - 12), nonce, secret)
 
          guard success != -1 else { throw EngineError.decryptionError }
 

@@ -474,7 +474,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
 
             return
         }
-
+        print("VOICE MODE IS: \(voiceInformation["mode"])")
         self.secret = secret.map({ UInt8($0) })
     }
 

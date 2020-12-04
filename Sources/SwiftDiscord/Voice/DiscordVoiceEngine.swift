@@ -257,7 +257,7 @@ public final class DiscordVoiceEngine : DiscordVoiceEngineSpec {
          guard audioSize > 0 else { throw EngineError.decryptionError }
 
          let unencrypted = UnsafeMutablePointer<UInt8>.allocate(capacity: audioSize)
-         let nonce = rtpHeader
+        let nonce = rtpHeader + DiscordVoiceEngine.padding
 
          defer { unencrypted.deallocate() }
          print("trying to decrypt voice data with secret\(secret) and nonce \(nonce)")
